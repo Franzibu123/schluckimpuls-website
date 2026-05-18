@@ -403,9 +403,9 @@ function SIATeaserC() {
   };
 
   const courses = [
-    { title: "Mandel-Kurs", subtitle: "Mini-Kurs", desc: "Vergrößerte Mandeln ganzheitlich verstehen und begleiten", status: "In Vorbereitung – Warteliste", statusColor: "#de6e27", hasWaitlist: true },
-    { title: "Zungenruhelage & Myo", subtitle: "Signature-Kurs", desc: "Mundatmung bei Kindern – Was du als Mama wissen und tun kannst", status: "In Vorbereitung", statusColor: "#de6e27", hasWaitlist: false },
-    { title: "Myo-Elternausbildung", subtitle: "Winter 2026/2027", desc: "Tiefe Ausbildung für Eltern – mit Warteliste-Funktion", status: "Warteliste", statusColor: "#a2b8a2", hasWaitlist: true },
+    { title: "Mandel-Kurs", subtitle: "Mini-Kurs · Early Bird €99", desc: "Vergrößerte Mandeln ganzheitlich verstehen und begleiten – wann eine OP nötig ist und welche Alternativen es gibt.", status: "Jetzt verfügbar", statusColor: "#16a34a", hasWaitlist: false, href: "/mandel-kurs" },
+    { title: "Zungenruhelage & Myo", subtitle: "Signature-Kurs", desc: "Mundatmung bei Kindern – Was du als Mama wissen und tun kannst", status: "In Vorbereitung", statusColor: "#de6e27", hasWaitlist: false, href: null },
+    { title: "Myo-Elternausbildung", subtitle: "Winter 2026/2027", desc: "Tiefe Ausbildung für Eltern – mit Warteliste-Funktion", status: "Warteliste", statusColor: "#a2b8a2", hasWaitlist: true, href: null },
   ];
 
   return (
@@ -434,9 +434,11 @@ function SIATeaserC() {
             {courses.map((course, i) => (
               <div
                 key={i}
-                className={`group bg-white rounded-2xl p-8 border border-[#1a1a1a]/5 hover:shadow-lg transition-all duration-300 hover:-translate-y-1 ${course.hasWaitlist ? "cursor-pointer" : ""}`}
+                className={`group bg-white rounded-2xl p-8 border border-[#1a1a1a]/5 hover:shadow-lg transition-all duration-300 hover:-translate-y-1 ${course.hasWaitlist || course.href ? "cursor-pointer" : ""}`}
                 onClick={() => {
-                  if (course.hasWaitlist) {
+                  if (course.href) {
+                    window.location.href = course.href;
+                  } else if (course.hasWaitlist) {
                     setWaitlistCourse(course.title);
                     setWaitlistOpen(true);
                   }
@@ -450,7 +452,15 @@ function SIATeaserC() {
                 </div>
                 <h3 className="font-serif text-xl font-bold text-[#1a1a1a] mb-3">{course.title}</h3>
                 <p className="text-[#1a1a1a]/60 text-sm leading-relaxed mb-6">{course.desc}</p>
-                {course.hasWaitlist ? (
+                {course.href ? (
+                  <a
+                    href={course.href}
+                    className="inline-flex items-center gap-2 text-[#de6e27] font-semibold text-sm hover:gap-3 transition-all"
+                    onClick={(e) => e.stopPropagation()}
+                  >
+                    Jetzt starten <ArrowRight size={16} />
+                  </a>
+                ) : course.hasWaitlist ? (
                   <button
                     className="inline-flex items-center gap-2 text-[#de6e27] font-semibold text-sm hover:gap-3 transition-all"
                     onClick={(e) => {
@@ -595,11 +605,10 @@ function AboutC() {
   );
 }
 
-/* ─── NEWSLETTER ─── */
+/* ─── NEWSLETTER / FREEBIE ─── */
 function NewsletterC() {
   return (
     <section className="relative bg-[#1a1a1a] py-20 md:py-24 overflow-hidden">
-      {/* Decorative accents */}
       <div className="absolute top-0 right-0 w-64 h-64 bg-[#4fa8a0]/10 rounded-full blur-3xl" />
       <div className="absolute bottom-0 left-0 w-48 h-48 bg-[#de6e27]/10 rounded-full blur-3xl" />
 
@@ -609,26 +618,27 @@ function NewsletterC() {
           whileInView="visible"
           viewport={{ once: true, margin: "-80px" }}
           variants={stagger}
-          className="max-w-2xl mx-auto text-center"
+          className="max-w-3xl mx-auto text-center"
         >
-          <motion.h2 variants={fadeUp} custom={0} className="font-serif text-3xl sm:text-4xl font-black text-white mb-4">
-            Bleib dran – mit dem Schluck.Impuls Newsletter
-          </motion.h2>
-          <motion.p variants={fadeUp} custom={1} className="text-white/50 text-lg mb-8">
-            Fundiertes Wissen, ehrliche Impulse und praktische Tipps direkt in dein Postfach.
-          </motion.p>
-          <motion.div variants={fadeUp} custom={2} className="flex flex-col sm:flex-row gap-3 max-w-md mx-auto">
-            <input
-              type="email"
-              placeholder="Deine E-Mail-Adresse"
-              className="flex-1 px-5 py-4 rounded-lg bg-white/10 text-white placeholder:text-white/30 border border-white/10 focus:ring-2 focus:ring-[#4fa8a0] focus:border-transparent outline-none"
-            />
-            <button className="bg-[#de6e27] text-white px-8 py-4 rounded-lg font-bold hover:bg-[#c55a18] transition-all active:scale-[0.97] shadow-lg whitespace-nowrap">
-              Anmelden
-            </button>
+          <motion.div variants={fadeUp} custom={0} className="inline-flex items-center gap-2 bg-[#de6e27]/15 text-[#de6e27] text-xs font-bold px-4 py-2 rounded-full mb-6 uppercase tracking-widest">
+            ✨ Kostenlos herunterladen
           </motion.div>
-          <motion.p variants={fadeUp} custom={3} className="text-white/30 text-xs mt-4">
-            Freebie-Inhalt wird ergänzt. Du kannst dich jederzeit abmelden.
+          <motion.h2 variants={fadeUp} custom={1} className="font-serif text-3xl sm:text-4xl font-black text-white mb-4">
+            5 Fragen, die du deinem HNO stellen musst – bevor du Ja zur OP sagst
+          </motion.h2>
+          <motion.p variants={fadeUp} custom={2} className="text-white/55 text-lg mb-8">
+            Die kostenlose Checkliste für Eltern, die informierte Entscheidungen treffen wollen.
+          </motion.p>
+          <motion.a
+            variants={fadeUp}
+            custom={3}
+            href="/checkliste"
+            className="inline-flex items-center gap-3 bg-[#de6e27] text-white px-10 py-4 rounded-xl font-bold text-lg hover:bg-[#c55a18] transition-all active:scale-[0.97] shadow-xl shadow-[#de6e27]/20"
+          >
+            Jetzt kostenlos herunterladen <ArrowRight size={20} />
+          </motion.a>
+          <motion.p variants={fadeUp} custom={4} className="text-white/25 text-xs mt-4">
+            Kein Spam · Jederzeit abmeldbar · Sofortiger Versand
           </motion.p>
         </motion.div>
       </div>
