@@ -2,6 +2,7 @@ import express from "express";
 import { createServer } from "http";
 import path from "path";
 import { fileURLToPath } from "url";
+import fs from "fs";
 import Anthropic from "@anthropic-ai/sdk";
 import TelegramBot from "node-telegram-bot-api";
 import cron from "node-cron";
@@ -11,11 +12,29 @@ const __dirname = path.dirname(__filename);
 
 const anthropic = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
 
-const BUSINESS_CONTEXT = `Franziska ist die Gründerin von Schluck.Impuls – ganzheitliche Mundraumgesundheit für Kinder (2–15 Jahre).
+const BUSINESS_CONTEXT_BASE = `Franziska ist die Gründerin von Schluck.Impuls – ganzheitliche Mundraumgesundheit für Kinder (2–15 Jahre).
 Zielgruppe: Mütter und Väter im DACH-Raum, die ganzheitliche Ansätze bevorzugen.
 Angebote: Online-Kurse, 1:1-Beratungen, digitale Produkte rund um Mundgesundheit bei Kindern.
 Branding: Terrakotta-Orange, Salbei, warm, mutig, fachlich tief.
 Ziel: 15.000€ monatlicher Umsatz in 90 Tagen.`;
+
+function loadDossiers(): string {
+  const dir = path.resolve(__dirname, "..", "data", "dossiers");
+  if (!fs.existsSync(dir)) return "";
+  const files = fs.readdirSync(dir)
+    .filter(f => f.endsWith(".md") && f !== "README.md")
+    .sort();
+  if (files.length === 0) return "";
+  const contents = files.map(f => {
+    const name = f.replace(/^\d+_/, "").replace(".md", "");
+    return `### Dossier: ${name}\n${fs.readFileSync(path.join(dir, f), "utf-8").trim()}`;
+  }).join("\n\n");
+  return `\n\n## Franziskas Dossiers (${files.length} Dokumente)\n${contents}`;
+}
+
+function BUSINESS_CONTEXT() {
+  return BUSINESS_CONTEXT_BASE + loadDossiers();
+}
 
 // ─── Anthropic helpers ────────────────────────────────────────────────────────
 
@@ -31,7 +50,7 @@ async function generateDayTasks(
     model: "claude-sonnet-4-6",
     max_tokens: 1500,
     system: `Du bist ein erfahrener Online-Business-Coach.
-${BUSINESS_CONTEXT}
+${BUSINESS_CONTEXT()}
 
 Heute ist Tag ${day} von 90. Phase: ${phase}.
 ${completedYesterday.length > 0 ? `Gestern abgehakt: ${completedYesterday.join(", ")}` : ""}
@@ -72,7 +91,7 @@ async function chatWithBot(
     model: "claude-sonnet-4-6",
     max_tokens: 500,
     system: `Du bist der persönliche Business-Coach von Franziska (Schluck.Impuls).
-${BUSINESS_CONTEXT}
+${BUSINESS_CONTEXT()}
 Tag ${day} von 90.
 
 Heutige Aufgaben:
@@ -340,7 +359,7 @@ async function startServer() {
       day <= 30 ? "Aufbau (Monat 1)" : day <= 60 ? "Wachstum (Monat 2)" : "Skalierung (Monat 3)";
 
     const systemPrompt = `Du bist ein erfahrener Online-Business-Coach.
-${BUSINESS_CONTEXT}
+${BUSINESS_CONTEXT()}
 
 Heute ist Tag ${day} von 90. Phase: ${phase}.
 ${completedTasks.length > 0 ? `Gestern abgehakt: ${completedTasks.join(", ")}` : ""}
@@ -402,7 +421,7 @@ Erstelle genau 5 konkrete, umsetzbare Tagesaufgaben. Antworte NUR mit validem JS
     const taskList = tasks.map((t, i) => `${i + 1}. [${t.id}] "${t.title}": ${t.description}`).join("\n");
 
     const systemPrompt = `Du bist der persönliche Business-Coach von Franziska (Schluck.Impuls).
-${BUSINESS_CONTEXT}
+${BUSINESS_CONTEXT()}
 Tag ${day} von 90.
 
 Aktuelle Aufgaben heute:
