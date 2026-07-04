@@ -8,6 +8,8 @@ import VarianteC from "./pages/VarianteC";
 import UeberMich from "./pages/UeberMich";
 import DankeLeitfaden from "./pages/DankeLeitfaden";
 import DankeUebungsliste from "./pages/DankeUebungsliste";
+import Reels from "./pages/Reels";
+import ReelSingle from "./pages/ReelSingle";
 
 function Router() {
   return (
@@ -16,6 +18,9 @@ function Router() {
       <Route path={"/ueber-mich"} component={UeberMich} />
       <Route path={"/danke-leitfaden"} component={DankeLeitfaden} />
       <Route path={"/danke-uebungsliste"} component={DankeUebungsliste} />
+      <Route path={"/reels"} component={Reels} />
+      {/* Einzelrouten: /reels/tonsillotomie, /reels/tonsillektomie, /reels/adenotomie, /reels/paukenroehrchen */}
+      <Route path={"/reels/:slug"} component={ReelSingle} />
       <Route path={"/404"} component={NotFound} />
       <Route component={NotFound} />
     </Switch>
