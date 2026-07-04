@@ -8,6 +8,7 @@ import VarianteC from "./pages/VarianteC";
 import UeberMich from "./pages/UeberMich";
 import DankeLeitfaden from "./pages/DankeLeitfaden";
 import DankeUebungsliste from "./pages/DankeUebungsliste";
+import SpielSchlucke from "./pages/SpielSchlucke";
 
 function Router() {
   return (
@@ -16,6 +17,7 @@ function Router() {
       <Route path={"/ueber-mich"} component={UeberMich} />
       <Route path={"/danke-leitfaden"} component={DankeLeitfaden} />
       <Route path={"/danke-uebungsliste"} component={DankeUebungsliste} />
+      <Route path={"/spiel"} component={SpielSchlucke} />
       <Route path={"/404"} component={NotFound} />
       <Route component={NotFound} />
     </Switch>
